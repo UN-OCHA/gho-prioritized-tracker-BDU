@@ -151,7 +151,7 @@ def main():
             "Plan": name,
             "Plan Type": plan_type,
             "Prioritized Requirements (USD)": pri_req,
-            "Funding (USD)": round(funding),
+            "Funding received (USD)": round(funding),
             "Unfunded (USD)": round(unfunded),
             "Coverage (%)": coverage,
             "Full Requirements (USD)": round(full_reqs),
@@ -173,10 +173,25 @@ def main():
     overlap_sudan = -575662771
     total_pri_adjusted = total_pri + overlap_hor + overlap_sudan
 
+    # 6b. Add totals row
+    total_coverage = round(total_funding / total_pri_adjusted * 100, 1) if total_pri_adjusted > 0 else 0
+    rows.append({
+        "Plan": "Total",
+        "Plan Type": "",
+        "Prioritized Requirements (USD)": round(total_pri_adjusted),
+        "Funding received (USD)": round(total_funding),
+        "Unfunded (USD)": round(max(0, total_pri_adjusted - total_funding)),
+        "Coverage (%)": total_coverage,
+        "Full Requirements (USD)": "",
+        "People in Need": "",
+        "People Targeted": "",
+        "People Prioritized": "",
+    })
+
     # 7. Write by-plan CSV
     fieldnames = [
         "Plan", "Plan Type",
-        "Prioritized Requirements (USD)", "Funding (USD)",
+        "Prioritized Requirements (USD)", "Funding received (USD)",
         "Unfunded (USD)", "Coverage (%)",
         "Full Requirements (USD)",
         "People in Need", "People Targeted", "People Prioritized",
@@ -185,12 +200,11 @@ def main():
     write_csv(by_plan_path, rows, fieldnames)
 
     # 8. Write totals CSV
-    total_coverage = round(total_funding / total_pri_adjusted * 100, 1) if total_pri_adjusted > 0 else 0
     totals_rows = [{
         "Metric": "Prioritized Requirements (USD)",
         "Value": round(total_pri_adjusted),
     }, {
-        "Metric": "Funding (USD)",
+        "Metric": "Funding received (USD)",
         "Value": round(total_funding),
     }, {
         "Metric": "Unfunded (USD)",
@@ -200,7 +214,7 @@ def main():
         "Value": total_coverage,
     }, {
         "Metric": "Plans Count",
-        "Value": len(rows),
+        "Value": len(rows) - 1,  # exclude totals row
     }, {
         "Metric": "Last Updated",
         "Value": now,
