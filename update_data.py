@@ -201,23 +201,14 @@ def main():
 
     # 8. Write totals CSV
     totals_rows = [{
-        "Metric": "Prioritized Requirements (USD)",
+        "Metric": "Prioritized Requirements (total)",
         "Value": round(total_pri_adjusted),
     }, {
-        "Metric": "Funding received (USD)",
+        "Metric": "Funding (total)",
         "Value": round(total_funding),
     }, {
-        "Metric": "Unfunded (USD)",
-        "Value": round(max(0, total_pri_adjusted - total_funding)),
-    }, {
-        "Metric": "Coverage (%)",
+        "Metric": "Percentage",
         "Value": total_coverage,
-    }, {
-        "Metric": "Plans Count",
-        "Value": len(rows) - 1,  # exclude totals row
-    }, {
-        "Metric": "Last Updated",
-        "Value": now,
     }]
     totals_path = os.path.join(OUTPUT_DIR, "gho_2026_totals.csv")
     write_csv(totals_path, totals_rows, ["Metric", "Value"])
