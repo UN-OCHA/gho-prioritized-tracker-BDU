@@ -1,0 +1,48 @@
+name: Update GHO 2026 prioritized data
+
+# The README described this daily job from the start, but the workflow file was never
+# committed, so it never ran once: the published CSVs sat frozen at 16 February 2026
+# while the Datawrapper chart on unocha.org kept serving them as current.
+#
+# If the CSVs stop moving again, look here first. GitHub disables scheduled workflows in
+# a repository with no activity for 60 days — a manual `workflow_dispatch` run re-enables
+# it. `update_data.py` fails loudly rather than republishing stale figures, so a red run
+# here is the intended behaviour when the dashboard itself has stopped refreshing.
+
+on:
+  schedule:
+    - cron: "0 4 * * *" # 04:00 UTC daily; FTS refreshes at 02:00 CET
+  workflow_dispatch: # lets a maintainer force a refresh from the Actions tab
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # No dependency install step: the tracker is standard library only.
+      - name: Read the dashboard and rebuild the CSVs
+        run: python update_data.py
+
+      - name: Commit if the numbers moved
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add output/
+          if git diff --staged --quiet; then
+            echo "Dashboard figures unchanged today."
+          else
+            git commit -m "Update GHO 2026 prioritized data ($(date -u +%Y-%m-%d))"
+            git push
+          fi

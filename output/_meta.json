@@ -1,0 +1,20 @@
+{
+  "source": "OCHA FTS Visualization Tool (PreCheck), Power BI publish-to-web",
+  "dashboard_data_date": "2026-09-07",
+  "generated_at": "2026-09-08 09:50 UTC",
+  "plans": 32,
+  "plans_without_people_data": [
+    "Lebanon",
+    "Cuba Plan of Action \u2013 Response to Hurricane Melissa",
+    "Islamic Republic of Iran Flash March - May",
+    "Nepal Rasuwa Flood",
+    "Global Humanitarian Overview (Plan not yet defined)"
+  ],
+  "totals": {
+    "prioritized_coverage": 0.5354880067596731,
+    "prioritized_funding_usd": 13355997697.305658,
+    "prioritized_requirements_usd": 24941730774,
+    "total_gho_funding_usd": 14160245974,
+    "total_gho_requirements_usd": 35067447407
+  }
+}

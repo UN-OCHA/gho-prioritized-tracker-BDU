@@ -1,0 +1,6 @@
+# Cached copy of the Power BI report definition (~2 MB, refetched every 6 hours)
+.model_cache.json
+
+__pycache__/
+*.pyc
+.DS_Store
