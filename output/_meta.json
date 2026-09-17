@@ -1,7 +1,7 @@
 {
   "source": "OCHA FTS Visualization Tool (PreCheck), Power BI publish-to-web",
-  "dashboard_data_date": "2026-09-15",
-  "generated_at": "2026-09-16 04:21 UTC",
+  "dashboard_data_date": "2026-09-16",
+  "generated_at": "2026-09-17 04:22 UTC",
   "plans": 32,
   "plans_without_people_data": [
     "Lebanon",
@@ -11,10 +11,10 @@
     "Global Humanitarian Overview (Plan not yet defined)"
   ],
   "totals": {
-    "prioritized_coverage": 0.5400390257368867,
-    "prioritized_funding_usd": 13469507987.382685,
+    "prioritized_coverage": 0.5432459465010214,
+    "prioritized_funding_usd": 13549494141.695284,
     "prioritized_requirements_usd": 24941730774,
-    "total_gho_funding_usd": 14253126134,
+    "total_gho_funding_usd": 14323873034,
     "total_gho_requirements_usd": 35067447407
   }
 }
