@@ -60,12 +60,22 @@ PEOPLE_CSV = os.path.join(SCRIPT_DIR, "people_data.csv")
 # report these ids change; `python ocha_fts_pbi.py <page>` lists the current ones.
 VISUAL_PLANS = "c056db16e838338ec71e"  # "By GHO Plans (in USD)"
 VISUAL_DATA_DATE = "c299af827dcd82be601b"  # "FTS API checksum date"
-KPI_VISUALS = {
-    "prioritized_requirements_usd": "8f7f2025c2d3027462de",
-    "prioritized_funding_usd": "0c2709702536cf493508",
-    "prioritized_coverage": "3e367e8735f8a5076eae",
-    "total_gho_requirements_usd": "7e26019a41ee238e4a04",
-    "total_gho_funding_usd": "0fbfef691b05063628bd",
+# The headline figures. Until 2 Oct 2026 each had its own card on the page. The FTS team
+# rebuilt the report on 2-3 Oct and all six cards disappeared, which stopped this action
+# (runs of 3, 4 and 5 Oct failed with "visual 8f7f2025... not found"). The same figures are now
+# one row in a single custom (Deneb) visual, so they are read from that visual by FIELD
+# NAME. If a field is renamed or removed, the run aborts naming it (see read_kpis) instead
+# of publishing a wrong or stale figure.
+VISUAL_KPIS = "8f70bf0c55723720a799"  # custom visual, one row, no title
+KPI_FIELDS = {
+    "prioritized_requirements_usd": "FINAL USD Required Prioritized ByGlobalCluster MEAS",
+    # Funds RECEIVED only. Do NOT use the "Prioritized Funding (USD)" card (c3ecfe62...):
+    # since the rebuild it reads "USD InPlan Total WithPledges", i.e. received + pledges +
+    # announcements ($14.40bn on 4 Oct against $13.74bn received).
+    "prioritized_funding_usd": "USD InPlan Prioritized",
+    "prioritized_coverage": "FINAL Coverage Prioritized ByGlobalCluster MEAS",
+    "total_gho_requirements_usd": "FINAL USD Required ByGlobalCluster MEAS",
+    "total_gho_funding_usd": "FINAL USD inPLan",
 }
 
 # The dashboard names plans in full, and in French or Spanish where that is the plan's
@@ -138,6 +148,24 @@ def first_value(rows: list[dict]):
     return None
 
 
+def read_kpis(model, page: str) -> dict:
+    """The headline figures, from the one custom visual that now carries them all.
+
+    Fails loudly and by name: a renamed field must stop the run, not turn into a zero or a
+    neighbouring column's number."""
+    rows = pbi.run_visual(model, page, VISUAL_KPIS)
+    if not rows:
+        raise SystemExit(f"ABORT: the headline-figures visual ({VISUAL_KPIS}) returned no rows.")
+    row = rows[0]
+    absent = [field for field in KPI_FIELDS.values() if field not in row]
+    if absent:
+        raise SystemExit(
+            f"ABORT: the dashboard's headline-figures visual no longer has: {'; '.join(absent)}. "
+            f"It now has: {'; '.join(sorted(row))}. Update KPI_FIELDS in update_data.py."
+        )
+    return {name: pbi.to_number(row[field]) for name, field in KPI_FIELDS.items()}
+
+
 def check_freshness(data_date: str | None, max_age_days: int) -> None:
     """Refuse to publish if the dashboard itself has stopped moving."""
     if not data_date:
@@ -176,10 +204,7 @@ def main() -> int:
     data_date = first_value(pbi.run_visual(model, page, VISUAL_DATA_DATE))
     check_freshness(data_date, args.max_age_days)
 
-    kpis = {
-        name: first_value(pbi.run_visual(model, page, visual_id))
-        for name, visual_id in KPI_VISUALS.items()
-    }
+    kpis = read_kpis(model, page)
     missing = [name for name, value in kpis.items() if value is None]
     if missing:
         raise SystemExit(f"ABORT: the dashboard returned no value for {', '.join(missing)}.")
