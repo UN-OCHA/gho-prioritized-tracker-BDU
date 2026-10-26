@@ -1,7 +1,7 @@
 {
   "source": "OCHA FTS Visualization Tool (PreCheck), Power BI publish-to-web",
-  "dashboard_data_date": "2026-10-24",
-  "generated_at": "2026-10-25 04:19 UTC",
+  "dashboard_data_date": "2026-10-25",
+  "generated_at": "2026-10-26 04:22 UTC",
   "plans": 33,
   "plans_without_people_data": [
     "Lebanon",
@@ -13,7 +13,7 @@
   ],
   "totals": {
     "prioritized_coverage": 0.5783934926466194,
-    "prioritized_funding_usd": 14416498002.564728,
+    "prioritized_funding_usd": 14416498002.56473,
     "prioritized_requirements_usd": 24925069500,
     "total_gho_funding_usd": 15758204731,
     "total_gho_requirements_usd": 35060481532
